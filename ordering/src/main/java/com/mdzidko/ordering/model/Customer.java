@@ -4,17 +4,25 @@ import com.mdzidko.ordering.dtos.CustomerDto;
 import com.mdzidko.ordering.exceptions.NotEnoughCreditsException;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.ToString;
 
+import javax.persistence.Embedded;
+import javax.persistence.Entity;
+import javax.persistence.Id;
 import java.util.UUID;
 
 @Getter
 @EqualsAndHashCode(of = "id")
 @ToString
+@Entity
+@NoArgsConstructor
 public class Customer {
+    @Id
     private UUID id;
     private String name;
     private String surname;
+    @Embedded
     private Address address;
     private double credits;
 

@@ -8,6 +8,7 @@ import com.mdzidko.ordering.exceptions.ProductNotFoundException;
 import com.mdzidko.ordering.repositories.CustomersOrdersRepository;
 import com.mdzidko.ordering.repositories.CustomersRepository;
 import com.mdzidko.ordering.repositories.ProductsRepository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.UUID;
 
@@ -44,6 +45,7 @@ public class CustomersOrdersService {
                 .orElseThrow(() -> new OrderNotFoundException(orderId));
     }
 
+    @Transactional
     public CustomerOrder addProductToOrder(final UUID orderId, final UUID productId, final int productQuantity){
         CustomerOrder customerOrder = findOrderById(orderId);
 
@@ -57,6 +59,7 @@ public class CustomersOrdersService {
         return customerOrder;
     }
 
+    @Transactional
     public CustomerOrder cancelOrder(final UUID orderId){
         CustomerOrder customerOrder = findOrderById(orderId);
 

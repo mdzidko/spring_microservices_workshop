@@ -4,10 +4,12 @@ import com.mdzidko.ordering.exceptions.ProductExistsException;
 import com.mdzidko.ordering.exceptions.ProductNotFoundException;
 import com.mdzidko.ordering.model.Product;
 import com.mdzidko.ordering.repositories.ProductsRepository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
+
 
 public class ProductsService {
     private final ProductsRepository productsRepository;
@@ -37,11 +39,15 @@ public class ProductsService {
                 .orElseThrow(() -> new ProductNotFoundException(productId));
     }
 
+    @Transactional
     public Product addProductToStock(UUID productId, int quantity){
-        Product product = findProductById(productId);
+        Product product = productsRepository
+                .findById(productId)
+                .orElseThrow(() -> new ProductNotFoundException(productId));
         return product.addToStock(quantity);
     }
 
+    @Transactional
     public Product removeProductFromStock(UUID productId, int quantity){
         Product product = findProductById(productId);
         return product.removeFromStock(quantity);

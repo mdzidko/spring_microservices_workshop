@@ -3,15 +3,23 @@ package com.mdzidko.ordering.model;
 import com.mdzidko.ordering.dtos.CustomerOrderLineDto;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.ToString;
 
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.OneToOne;
 import java.util.UUID;
 
+@Entity
 @Getter
 @EqualsAndHashCode(of = "id")
 @ToString
+@NoArgsConstructor
 public class CustomerOrderLine {
+    @Id
     private UUID id;
+    @OneToOne
     private Product product;
     private int quantity;
 

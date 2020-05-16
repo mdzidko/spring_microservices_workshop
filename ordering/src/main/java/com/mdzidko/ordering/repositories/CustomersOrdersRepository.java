@@ -2,13 +2,12 @@ package com.mdzidko.ordering.repositories;
 
 import com.mdzidko.ordering.model.Customer;
 import com.mdzidko.ordering.model.CustomerOrder;
+import org.springframework.data.repository.CrudRepository;
+import org.springframework.stereotype.Repository;
 
-import java.util.Optional;
 import java.util.UUID;
 
-public interface CustomersOrdersRepository {
-    CustomerOrder save(CustomerOrder customerOrder);
-    Iterable<CustomerOrder> findAll();
+@Repository
+public interface CustomersOrdersRepository extends CrudRepository<CustomerOrder, UUID> {
     Iterable<CustomerOrder> findAllByCustomer(Customer customer);
-    Optional<CustomerOrder> findById(UUID orderId);
 }

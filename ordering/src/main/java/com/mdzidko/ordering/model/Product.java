@@ -4,14 +4,20 @@ import com.mdzidko.ordering.dtos.ProductDto;
 import com.mdzidko.ordering.exceptions.NotEnoughProductException;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.ToString;
 
+import javax.persistence.Entity;
+import javax.persistence.Id;
 import java.util.UUID;
 
+@Entity
 @Getter
 @EqualsAndHashCode(of = "id")
 @ToString
+@NoArgsConstructor
 public class Product {
+    @Id
     private UUID id;
     private String code;
     private String name;
