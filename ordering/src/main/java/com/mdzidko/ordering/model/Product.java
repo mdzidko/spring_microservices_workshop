@@ -1,5 +1,6 @@
 package com.mdzidko.ordering.model;
 
+import com.mdzidko.ordering.dtos.ProductDto;
 import com.mdzidko.ordering.exceptions.NotEnoughProductException;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -46,5 +47,16 @@ public class Product {
 
         this.quantity -= quantity;
         return this;
+    }
+
+    public ProductDto dto() {
+        return ProductDto
+                    .builder()
+                    .id(this.getId())
+                    .name(this.getName())
+                    .code(this.getCode())
+                    .quantity(this.getQuantity())
+                    .price(this.getPrice())
+                    .build();
     }
 }

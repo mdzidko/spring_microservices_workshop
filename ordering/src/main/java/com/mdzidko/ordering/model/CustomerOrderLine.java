@@ -1,5 +1,6 @@
 package com.mdzidko.ordering.model;
 
+import com.mdzidko.ordering.dtos.CustomerOrderLineDto;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
@@ -31,5 +32,16 @@ public class CustomerOrderLine {
     public CustomerOrderLine addQuantity(final int productQuantity) {
         this.quantity += productQuantity;
         return this;
+    }
+
+    public CustomerOrderLineDto dto(){
+        return CustomerOrderLineDto
+                .builder()
+                .productId(this.product.getId())
+                .productCode(this.product.getCode())
+                .productName(this.product.getName())
+                .productQuantity(this.getQuantity())
+                .value(this.calculateValue())
+                .build();
     }
 }

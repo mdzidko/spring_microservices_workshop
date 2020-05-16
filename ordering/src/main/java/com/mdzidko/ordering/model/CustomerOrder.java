@@ -1,5 +1,6 @@
 package com.mdzidko.ordering.model;
 
+import com.mdzidko.ordering.dtos.CustomerOrderDto;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -49,5 +50,15 @@ public class CustomerOrder {
 
     public void cancel() {
         this.status = CustomerOrderStatus.CANCELLED;
+    }
+
+    public CustomerOrderDto dto(){
+        return CustomerOrderDto
+                .builder()
+                .id(this.id)
+                .status(this.status)
+                .value(calculateOrderValue())
+                .customer(this.customer.dto())
+                .build();
     }
 }

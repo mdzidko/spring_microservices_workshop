@@ -1,5 +1,6 @@
 package com.mdzidko.ordering.model;
 
+import com.mdzidko.ordering.dtos.CustomerDto;
 import com.mdzidko.ordering.exceptions.NotEnoughCreditsException;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -41,5 +42,19 @@ public class Customer {
 
         this.credits -= credits;
         return this;
+    }
+
+    public CustomerDto dto() {
+        return CustomerDto
+                .builder()
+                .id(this.getId())
+                .name(this.getName())
+                .surname(this.getSurname())
+                .credits(this.getCredits())
+                .city(this.getAddress().getCity())
+                .postalCode(this.getAddress().getPostalCode())
+                .street(this.getAddress().getStreet())
+                .local(this.getAddress().getLocal())
+                .build();
     }
 }
