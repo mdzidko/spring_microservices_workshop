@@ -1,6 +1,5 @@
 package com.mdzidko.ordering.customerorder;
 
-import com.mdzidko.ordering.product.Product;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -8,7 +7,6 @@ import lombok.ToString;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
-import javax.persistence.OneToOne;
 import java.util.UUID;
 
 @Entity
@@ -16,40 +14,39 @@ import java.util.UUID;
 @EqualsAndHashCode(of = "id")
 @ToString
 @NoArgsConstructor
-public class CustomerOrderLine {
+class CustomerOrderLine {
     @Id
     private UUID id;
-    @OneToOne
-    private Product product;
+    private UUID productId;
     private int quantity;
+    private double productPrice;
 
-    private CustomerOrderLine(final Product product, final int quantity) {
+    private CustomerOrderLine(final UUID productId, final int quantity, final double productPrice) {
         this.id = UUID.randomUUID();
-        this.product = product;
+        this.productId = productId;
         this.quantity = quantity;
+        this.productPrice = productPrice;
     }
 
-    public static CustomerOrderLine create(final Product product, final int quantity) {
-        return new CustomerOrderLine(product, quantity);
+    static CustomerOrderLine create(final UUID productId, final int quantity, final double unitValue) {
+        return new CustomerOrderLine(productId, quantity, unitValue);
     }
 
-    public double calculateValue() {
-        return product.getPrice() * quantity;
-    }
-
-    public CustomerOrderLine addQuantity(final int productQuantity) {
+    CustomerOrderLine addQuantity(final int productQuantity) {
         this.quantity += productQuantity;
         return this;
     }
 
-    public CustomerOrderLineDto dto(){
+    double calculateTotalValue() {
+        return this.quantity * this.productPrice;
+    }
+
+    CustomerOrderLineDto dto(){
         return CustomerOrderLineDto
                 .builder()
-                .productId(this.product.getId())
-                .productCode(this.product.getCode())
-                .productName(this.product.getName())
+                .productId(this.productId)
                 .productQuantity(this.getQuantity())
-                .value(this.calculateValue())
+                .value(this.calculateTotalValue())
                 .build();
     }
 }

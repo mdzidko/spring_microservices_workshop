@@ -6,6 +6,6 @@ import org.springframework.stereotype.Repository;
 import java.util.UUID;
 
 @Repository
-public interface ProductsRepository extends CrudRepository<Product, UUID> {
+interface ProductsRepository extends CrudRepository<Product, UUID> {
     boolean existsByCode(String code);
 }

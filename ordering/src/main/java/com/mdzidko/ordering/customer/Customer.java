@@ -15,7 +15,7 @@ import java.util.UUID;
 @ToString
 @Entity
 @NoArgsConstructor
-public class Customer {
+class Customer {
     @Id
     private UUID id;
     private String name;
@@ -32,16 +32,16 @@ public class Customer {
         this.credits = 0.0;
     }
 
-    public static Customer create(String name, String surname, Address address){
+    static Customer create(String name, String surname, Address address){
         return new Customer(name, surname, address);
     }
 
-    public Customer addCredits(final double credits) {
+    Customer addCredits(final double credits) {
         this.credits += credits;
         return this;
     }
 
-    public Customer reserveCredits(final double credits) {
+    Customer reserveCredits(final double credits) {
         if(this.credits < credits){
             throw new NotEnoughCreditsException(this.id);
         }
@@ -50,7 +50,7 @@ public class Customer {
         return this;
     }
 
-    public CustomerDto dto() {
+    CustomerDto dto() {
         return CustomerDto
                 .builder()
                 .id(this.getId())

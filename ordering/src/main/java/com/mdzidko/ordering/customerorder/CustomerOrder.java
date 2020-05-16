@@ -1,7 +1,6 @@
 package com.mdzidko.ordering.customerorder;
 
-import com.mdzidko.ordering.customer.Customer;
-import com.mdzidko.ordering.product.Product;
+
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -17,54 +16,54 @@ import java.util.UUID;
 @EqualsAndHashCode(of = "id")
 @ToString
 @Entity
-public class CustomerOrder {
+class CustomerOrder {
     @Id
     private UUID id;
-    @OneToOne
-    private Customer customer;
+    private UUID customerId;
     @OneToMany(cascade = CascadeType.ALL)
     private List<CustomerOrderLine> lines = new ArrayList<>();
     private CustomerOrderStatus status = CustomerOrderStatus.NEW;
 
-    private CustomerOrder(final Customer customer) {
+    private CustomerOrder(final UUID customerId) {
         this.id = UUID.randomUUID();
-        this.customer = customer;
+        this.customerId = customerId;
     }
 
-    public static CustomerOrder create(final Customer customer){
-        return new CustomerOrder(customer);
+    static CustomerOrder create(final UUID customerId){
+        return new CustomerOrder(customerId);
     }
 
-    public double calculateOrderValue() {
+    double calculateOrderValue() {
         return lines
                 .stream()
-                .map(CustomerOrderLine::calculateValue)
+                .map(CustomerOrderLine::calculateTotalValue)
                 .reduce(0.0, (sum, lineValue) -> sum + lineValue);
     }
 
-    public CustomerOrder addNewLine(final Product product, final int productQuantity) {
+    CustomerOrder addNewLine(final UUID productId, final int productQuantity, final double productPrice) {
         lines
                 .stream()
-                .filter(orderLine -> orderLine.getProduct() == product)
+                .filter(orderLine -> orderLine.getProductId().equals(productId))
                 .findFirst()
                 .ifPresentOrElse(
                         line -> line.addQuantity(productQuantity),
-                        () -> lines.add(CustomerOrderLine.create(product, productQuantity)));
+                        () -> lines.add(CustomerOrderLine.create(productId, productQuantity, productPrice)));
 
         return this;
     }
 
-    public void cancel() {
+    CustomerOrder cancel() {
         this.status = CustomerOrderStatus.CANCELLED;
+        return this;
     }
 
-    public CustomerOrderDto dto(){
+    CustomerOrderDto dto(){
         return CustomerOrderDto
                 .builder()
                 .id(this.id)
+                .customerId(this.customerId)
                 .status(this.status)
                 .value(calculateOrderValue())
-                .customer(this.customer.dto())
                 .build();
     }
 }

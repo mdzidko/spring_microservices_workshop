@@ -3,6 +3,8 @@ package com.mdzidko.ordering.customer;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.UUID;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 public class CustomersService {
     private final CustomersRepository customersRepository;
@@ -11,7 +13,7 @@ public class CustomersService {
         this.customersRepository = customersRepository;
     }
 
-    public Customer addNewCustomer(String name, String surname, String street, String city, String postal, int local){
+    public CustomerDto addNewCustomer(String name, String surname, String street, String city, String postal, int local){
         if(customersRepository.existsByNameAndSurname(name, surname)){
             throw new CustomerAlreadyExistsException(name, surname);
         }
@@ -19,28 +21,36 @@ public class CustomersService {
         Address address = Address.create(street, city, postal, local);
 
         Customer customer =  Customer.create(name, surname, address);
-        return customersRepository.save(customer);
+        return customersRepository.save(customer).dto();
     }
 
-    public Iterable<Customer> findAllCustomers(){
-        return customersRepository.findAll();
+    public Iterable<CustomerDto> findAllCustomers(){
+        return StreamSupport
+                .stream(customersRepository.findAll().spliterator(), false)
+                .map(Customer::dto)
+                .collect(Collectors.toList());
     }
 
-    public Customer findCustomerById(final UUID id){
+    public CustomerDto findCustomerById(final UUID customerId){
         return customersRepository
-                .findById(id)
-                .orElseThrow(() -> new CustomerNotFoundException(id));
+                .findById(customerId)
+                .orElseThrow(() -> new CustomerNotFoundException(customerId))
+                .dto();
     }
 
-    @Transactional
-    public Customer addCreditsForCustomer(final UUID customerId, final double credits) {
-        Customer customer = findCustomerById(customerId);
-        return customer.addCredits(credits);
+    public CustomerDto addCreditsForCustomer(final UUID customerId, final double credits) {
+        Customer customer = customersRepository
+                .findById(customerId)
+                .orElseThrow(() -> new CustomerNotFoundException(customerId));
+
+        return customer.addCredits(credits).dto();
     }
 
-    @Transactional
-    public Customer removeCreditsFromCustomer(final UUID customerId, final double credits) {
-        Customer customer = findCustomerById(customerId);
-        return customer.reserveCredits(credits);
+    public CustomerDto removeCreditsFromCustomer(final UUID customerId, final double credits) {
+        Customer customer = customersRepository
+                .findById(customerId)
+                .orElseThrow(() -> new CustomerNotFoundException(customerId));
+
+        return customer.reserveCredits(credits).dto();
     }
 }

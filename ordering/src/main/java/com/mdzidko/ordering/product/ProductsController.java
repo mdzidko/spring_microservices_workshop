@@ -4,12 +4,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
-import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 
 @RestController
 @RequestMapping("/products")
-public class ProductsController {
+class ProductsController {
     private final ProductsService productsService;
 
     public ProductsController(final ProductsService productsService) {
@@ -18,15 +16,12 @@ public class ProductsController {
 
     @GetMapping
     public Iterable<ProductDto> findAllProducts(){
-        return StreamSupport
-                .stream(productsService.findAllProducts().spliterator(), false)
-                .map(Product::dto)
-                .collect(Collectors.toList());
+        return productsService.findAllProducts();
     }
 
     @GetMapping("/{productId}")
     public ProductDto findProductById(@PathVariable("productId") UUID productId){
-        return productsService.findProductById(productId).dto();
+        return productsService.findProductById(productId);
     }
 
     @PostMapping
@@ -36,18 +31,17 @@ public class ProductsController {
                 .addNewProduct(
                         productDto.getName(),
                         productDto.getCode(),
-                        productDto.getPrice())
-                .dto();
+                        productDto.getPrice());
     }
 
     @PutMapping("/{productId}/quantity")
     public ProductDto addQuantityForProduct(@PathVariable("productId") UUID productId, @RequestBody String quantity){
-        return productsService.addProductToStock(productId, Integer.valueOf(quantity)).dto();
+        return productsService.addProductToStock(productId, Integer.valueOf(quantity));
     }
 
     @DeleteMapping("/{productId}/quantity")
     public ProductDto removeQuantityForProduct(@PathVariable("productId") UUID productId, @RequestBody String quantity){
-        return productsService.removeProductFromStock(productId, Integer.valueOf(quantity)).dto();
+        return productsService.removeProductFromStock(productId, Integer.valueOf(quantity));
     }
 
 }

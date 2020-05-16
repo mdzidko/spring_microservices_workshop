@@ -4,12 +4,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
-import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 
 @RestController
 @RequestMapping("/customers")
-public class CustomersController {
+class CustomersController {
     private final CustomersService customersService;
 
     public CustomersController(final CustomersService customersService) {
@@ -18,15 +16,12 @@ public class CustomersController {
 
     @GetMapping
     public Iterable<CustomerDto> findAllCustomers(){
-        return StreamSupport
-                .stream(customersService.findAllCustomers().spliterator(), false)
-                .map(Customer::dto)
-                .collect(Collectors.toList());
+        return customersService.findAllCustomers();
     }
 
     @GetMapping("/{customerId}")
     public CustomerDto findCustomerById(@PathVariable("customerId") UUID customerId){
-        return customersService.findCustomerById(customerId).dto();
+        return customersService.findCustomerById(customerId);
     }
 
     @PostMapping
@@ -39,18 +34,17 @@ public class CustomersController {
                         customerDto.getStreet(),
                         customerDto.getCity(),
                         customerDto.getPostalCode(),
-                        customerDto.getLocal())
-                .dto();
+                        customerDto.getLocal());
     }
 
     @PutMapping("/{customerId}/credits")
     public CustomerDto addCreditsForCustomer(@PathVariable("customerId") UUID customerId, @RequestBody String credits){
-        return customersService.addCreditsForCustomer(customerId, Double.valueOf(credits)).dto();
+        return customersService.addCreditsForCustomer(customerId, Double.valueOf(credits));
     }
 
     @DeleteMapping("/{customerId}/credits")
     public CustomerDto removeCreditsForCustomer(@PathVariable("customerId") UUID customerId, @RequestBody String credits){
-        return customersService.removeCreditsFromCustomer(customerId, Double.valueOf(credits)).dto();
+        return customersService.removeCreditsFromCustomer(customerId, Double.valueOf(credits));
     }
 
 
