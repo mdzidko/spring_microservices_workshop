@@ -2,8 +2,12 @@ package com.mdzidko.ordering;
 
 import com.mdzidko.ordering.services.CustomersService;
 import com.mdzidko.ordering.services.ProductsService;
+import org.springframework.context.ApplicationListener;
+import org.springframework.context.event.ContextRefreshedEvent;
+import org.springframework.stereotype.Component;
 
-class DataInitializer {
+@Component
+class DataInitializer implements ApplicationListener<ContextRefreshedEvent> {
     private final CustomersService customersService;
     private final ProductsService productsService;
 
@@ -12,7 +16,12 @@ class DataInitializer {
         this.productsService = productsService;
     }
 
-    public void initData(){
+    @Override
+    public void onApplicationEvent(final ContextRefreshedEvent contextRefreshedEvent) {
+        initData();
+    }
+
+    private void initData(){
         initCustomers();
         initProducts();
 

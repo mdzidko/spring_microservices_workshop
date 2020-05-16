@@ -2,6 +2,7 @@ package com.mdzidko.ordering.repositories;
 
 import com.mdzidko.ordering.model.Customer;
 import com.mdzidko.ordering.model.CustomerOrder;
+import org.springframework.stereotype.Repository;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -9,6 +10,7 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+@Repository
 public class InMemCustomersOrdersRepository implements CustomersOrdersRepository{
     private final Map<UUID, CustomerOrder> customersOrders = new HashMap<>();
 

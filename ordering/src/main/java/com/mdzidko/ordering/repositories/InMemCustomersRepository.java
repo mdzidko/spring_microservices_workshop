@@ -1,12 +1,14 @@
 package com.mdzidko.ordering.repositories;
 
 import com.mdzidko.ordering.model.Customer;
+import org.springframework.stereotype.Repository;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
+@Repository
 public class InMemCustomersRepository implements CustomersRepository{
     private final Map<UUID, Customer> customers = new HashMap<>();
 
