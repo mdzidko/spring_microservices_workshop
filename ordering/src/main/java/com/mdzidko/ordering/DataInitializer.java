@@ -30,25 +30,35 @@ class DataInitializer implements ApplicationListener<ContextRefreshedEvent> {
     }
 
     private void initCustomers() {
-        customersService
-                .addNewCustomer("Adrian", "Polityczny", "Wiejska", "Warszawa", "00-902", 4);
-        customersService
-                .addNewCustomer("Lucjan", "Diaboliczny", "Piekielna", "Hel", "66-666", 666);
+        try {
+            customersService
+                    .addNewCustomer("Adrian", "Polityczny", "Wiejska", "Warszawa", "00-902", 4);
+            customersService
+                    .addNewCustomer("Lucjan", "Diaboliczny", "Piekielna", "Hel", "66-666", 666);
 
-        customersService
-                .findAllCustomers()
-                .forEach(customer -> customersService.addCreditsForCustomer(customer.getId(), 1000));
+            customersService
+                    .findAllCustomers()
+                    .forEach(customer -> customersService.addCreditsForCustomer(customer.getId(), 1000));
+        }
+        catch(Exception ex){
+            System.out.println("Customers already initialized");
+        }
     }
 
     public void initProducts() {
-        productsService.addNewProduct("12344321", "Bucket", 10.0);
-        productsService.addNewProduct("98756632", "Scythe", 50.0);
-        productsService.addNewProduct("43298854", "Chain", 20.0);
-        productsService.addNewProduct("87566432", "Barrel", 100.0);
+        try {
+            productsService.addNewProduct("12344321", "Bucket", 10.0);
+            productsService.addNewProduct("98756632", "Scythe", 50.0);
+            productsService.addNewProduct("43298854", "Chain", 20.0);
+            productsService.addNewProduct("87566432", "Barrel", 100.0);
 
-        productsService
-                .findAllProducts()
-                .forEach(product -> productsService.addProductToStock(product.getId(), 20));
+            productsService
+                    .findAllProducts()
+                    .forEach(product -> productsService.addProductToStock(product.getId(), 20));
+        }
+        catch(Exception ex){
+            System.out.println("Products already initialized");
+        }
     }
 
     private void printCollection(Iterable<?> collection, String label){

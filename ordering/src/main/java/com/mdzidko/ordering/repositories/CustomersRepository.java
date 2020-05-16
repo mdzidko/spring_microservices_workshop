@@ -8,4 +8,5 @@ import java.util.UUID;
 
 @Repository
 public interface CustomersRepository extends CrudRepository<Customer, UUID> {
+    boolean existsByNameAndSurname(String name, String surname);
 }

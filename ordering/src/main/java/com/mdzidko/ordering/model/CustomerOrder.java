@@ -6,10 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
+import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -24,7 +21,7 @@ public class CustomerOrder {
     private UUID id;
     @OneToOne
     private Customer customer;
-    @OneToMany
+    @OneToMany(cascade = CascadeType.ALL)
     private List<CustomerOrderLine> lines = new ArrayList<>();
     private CustomerOrderStatus status = CustomerOrderStatus.NEW;
 

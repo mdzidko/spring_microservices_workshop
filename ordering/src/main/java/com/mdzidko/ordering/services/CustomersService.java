@@ -1,5 +1,6 @@
 package com.mdzidko.ordering.services;
 
+import com.mdzidko.ordering.exceptions.CustomerAlreadyExistsException;
 import com.mdzidko.ordering.exceptions.CustomerNotFoundException;
 import com.mdzidko.ordering.model.Address;
 import com.mdzidko.ordering.model.Customer;
@@ -16,6 +17,10 @@ public class CustomersService {
     }
 
     public Customer addNewCustomer(String name, String surname, String street, String city, String postal, int local){
+        if(customersRepository.existsByNameAndSurname(name, surname)){
+            throw new CustomerAlreadyExistsException(name, surname);
+        }
+
         Address address = Address.create(street, city, postal, local);
 
         Customer customer =  Customer.create(name, surname, address);
