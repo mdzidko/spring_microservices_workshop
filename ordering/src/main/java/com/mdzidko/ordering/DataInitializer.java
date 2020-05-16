@@ -1,7 +1,7 @@
 package com.mdzidko.ordering;
 
-import com.mdzidko.ordering.services.CustomersService;
-import com.mdzidko.ordering.services.ProductsService;
+import com.mdzidko.ordering.customer.CustomersService;
+import com.mdzidko.ordering.product.ProductsService;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.stereotype.Component;
