@@ -14,7 +14,7 @@ import java.util.UUID;
 @EqualsAndHashCode(of = "id")
 @ToString
 @NoArgsConstructor
-public class Product {
+class Product {
     @Id
     private UUID id;
     private String code;
@@ -30,21 +30,21 @@ public class Product {
         this.quantity = 0;
     }
 
-    static public Product create(final String code, final String name, final double price){
+    static Product create(final String code, final String name, final double price){
        return new Product(code, name, price);
     }
 
-    public Product changePrice(final double price){
+    Product changePrice(final double price){
         this.price = price;
         return this;
     }
 
-    public Product addToStock(final int quantity) {
+    Product addToStock(final int quantity) {
         this.quantity += quantity;
         return this;
     }
 
-    public Product removeFromStock(final int quantity) {
+    Product removeFromStock(final int quantity) {
         if(this.quantity < quantity){
             throw new NotEnoughProductException(this.id);
         }
@@ -53,7 +53,7 @@ public class Product {
         return this;
     }
 
-    public ProductDto dto() {
+    ProductDto dto() {
         return ProductDto
                     .builder()
                     .id(this.getId())

@@ -13,8 +13,6 @@ import java.util.UUID;
 @Builder
 public class CustomerOrderLineDto {
     private UUID productId;
-    private String productName;
-    private String productCode;
     private int productQuantity;
     private double value;
 }

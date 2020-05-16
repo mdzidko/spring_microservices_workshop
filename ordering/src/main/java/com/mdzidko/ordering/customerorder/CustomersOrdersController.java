@@ -4,12 +4,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
-import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
+
 
 @RestController
 @RequestMapping("/customersOrders")
-public class CustomersOrdersController {
+class CustomersOrdersController {
     private final CustomersOrdersService customersOrdersService;
 
     CustomersOrdersController(final CustomersOrdersService customersOrdersService) {
@@ -20,7 +19,7 @@ public class CustomersOrdersController {
     public Iterable<CustomerOrderDto> findCustomersOrders(
             @RequestParam(value = "customerId", required = false) UUID customerId){
 
-        Iterable<CustomerOrder> foundOrders;
+        Iterable<CustomerOrderDto> foundOrders;
 
         if(customerId == null){
             foundOrders = customersOrdersService.findAllOrders();
@@ -29,31 +28,24 @@ public class CustomersOrdersController {
             foundOrders = customersOrdersService.findAllCustomerOrders(customerId);
         }
 
-        return StreamSupport
-                .stream(foundOrders.spliterator(), false)
-                .map(CustomerOrder::dto)
-                .collect(Collectors.toList());
+        return foundOrders;
     }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public CustomerOrderDto addNewCustomerOrder(@RequestBody String customerId){
         return customersOrdersService
-                .createCustomerOrder(UUID.fromString(customerId))
-                .dto();
+                .createCustomerOrder(UUID.fromString(customerId));
     }
 
     @GetMapping("/{orderId}")
     public CustomerOrderDto findCustomersOrdersById(@PathVariable("orderId") UUID orderId){
-        return customersOrdersService.findOrderById(orderId).dto();
+        return customersOrdersService.findOrderById(orderId);
     }
 
     @GetMapping("/{orderId}/lines")
     public Iterable<CustomerOrderLineDto> findCustomerOrderLines(@PathVariable("orderId") UUID orderId){
-        return StreamSupport
-                .stream(customersOrdersService.findAllCustomerOrderLines(orderId).spliterator(), false)
-                .map(CustomerOrderLine::dto)
-                .collect(Collectors.toList());
+        return customersOrdersService.findAllCustomerOrderLines(orderId);
     }
 
     @PostMapping("/{orderId}/lines")
@@ -61,12 +53,11 @@ public class CustomersOrdersController {
     public CustomerOrderDto addCustomerOrderLine(@PathVariable("orderId") UUID orderId,
                                                      @RequestBody NewOrderLineDto newOrderLineDto){
         return customersOrdersService
-                .addProductToOrder(orderId, newOrderLineDto.getProductId(), newOrderLineDto.getQuantity())
-                .dto();
+                .addProductToOrder(orderId, newOrderLineDto.getProductId(), newOrderLineDto.getQuantity());
     }
 
     @PutMapping("/{orderId}/cancelled")
     public CustomerOrderDto cancellCustomerOrder(@PathVariable("orderId") UUID orderId){
-        return customersOrdersService.cancelOrder(orderId).dto();
+        return customersOrdersService.cancelOrder(orderId);
     }
 }

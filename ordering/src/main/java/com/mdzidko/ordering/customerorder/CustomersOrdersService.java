@@ -1,69 +1,79 @@
 package com.mdzidko.ordering.customerorder;
 
-import com.mdzidko.ordering.customer.Customer;
-import com.mdzidko.ordering.customer.CustomerNotFoundException;
-import com.mdzidko.ordering.product.Product;
-import com.mdzidko.ordering.product.ProductNotFoundException;
-import com.mdzidko.ordering.customer.CustomersRepository;
-import com.mdzidko.ordering.product.ProductsRepository;
+import com.mdzidko.ordering.customer.CustomersService;
+import com.mdzidko.ordering.product.ProductDto;
+import com.mdzidko.ordering.product.ProductsService;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.UUID;
-
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 public class CustomersOrdersService {
     private final CustomersOrdersRepository customersOrdersRepository;
-    private final CustomersRepository customersRepository;
-    private final ProductsRepository productsRepository;
+    private final CustomersService customersService;
+    private final ProductsService productsService;
 
     public CustomersOrdersService(final CustomersOrdersRepository customersOrdersRepository,
-                                  final CustomersRepository customersRepository, final ProductsRepository productsRepository) {
+                                  final CustomersService customersService, final ProductsService productsService) {
         this.customersOrdersRepository = customersOrdersRepository;
-        this.customersRepository = customersRepository;
-        this.productsRepository = productsRepository;
+        this.customersService = customersService;
+        this.productsService = productsService;
     }
 
-    public CustomerOrder createCustomerOrder(final UUID customerId){
-        Customer customer = findCustomerById(customerId);
-        return customersOrdersRepository.save(CustomerOrder.create(customer));
+
+    public CustomerOrderDto createCustomerOrder(final UUID customerId){
+        customersService.findCustomerById(customerId);
+        return customersOrdersRepository.save(CustomerOrder.create(customerId)).dto();
     }
 
-    public Iterable<CustomerOrder> findAllOrders(){
-        return customersOrdersRepository.findAll();
+    public Iterable<CustomerOrderDto> findAllOrders(){
+        return StreamSupport
+                .stream(customersOrdersRepository.findAll().spliterator(), false)
+                .map(CustomerOrder::dto)
+                .collect(Collectors.toList());
     }
 
-    public Iterable<CustomerOrder> findAllCustomerOrders(final UUID customerId){
-        Customer customer = findCustomerById(customerId);
-        return customersOrdersRepository.findAllByCustomer(customer);
+    public Iterable<CustomerOrderDto> findAllCustomerOrders(final UUID customerId){
+        customersService.findCustomerById(customerId);
+        return StreamSupport
+                .stream(customersOrdersRepository.findAllByCustomerId(customerId).spliterator(), false)
+                .map(CustomerOrder::dto)
+                .collect(Collectors.toList());
     }
 
-    public CustomerOrder findOrderById(final UUID orderId){
+    public CustomerOrderDto findOrderById(final UUID orderId){
         return customersOrdersRepository
                 .findById(orderId)
-                .orElseThrow(() -> new OrderNotFoundException(orderId));
+                .orElseThrow(() -> new OrderNotFoundException(orderId))
+                .dto();
     }
 
     @Transactional
-    public CustomerOrder addProductToOrder(final UUID orderId, final UUID productId, final int productQuantity){
-        CustomerOrder customerOrder = findOrderById(orderId);
+    public CustomerOrderDto addProductToOrder(final UUID orderId, final UUID productId, final int productQuantity){
+        CustomerOrder customerOrder = customersOrdersRepository
+                                        .findById(orderId)
+                                        .orElseThrow(() -> new OrderNotFoundException(orderId));
 
         if(customerOrder.getStatus() != CustomerOrderStatus.NEW){
             throw new BadOrderStatusException(customerOrder.getStatus());
         }
 
-        Product product = findProductById(productId);
-        product.removeFromStock(productQuantity);
+        ProductDto product = productsService.findProductById(productId);
+        productsService.removeProductFromStock(productId, productQuantity);
 
-        customerOrder.getCustomer().reserveCredits(productQuantity * product.getPrice());
+        customersService.removeCreditsFromCustomer(customerOrder.getCustomerId(), productQuantity * product.getPrice());
 
-        customerOrder.addNewLine(product, productQuantity);
-
-        return customerOrder;
+        return customerOrder
+                .addNewLine(productId, productQuantity, product.getPrice())
+                .dto();
     }
 
     @Transactional
-    public CustomerOrder cancelOrder(final UUID orderId){
-        CustomerOrder customerOrder = findOrderById(orderId);
+    public CustomerOrderDto cancelOrder(final UUID orderId){
+        CustomerOrder customerOrder = customersOrdersRepository
+                .findById(orderId)
+                .orElseThrow(() -> new OrderNotFoundException(orderId));
 
         if(customerOrder.getStatus() == CustomerOrderStatus.CANCELLED){
             throw new BadOrderStatusException(CustomerOrderStatus.CANCELLED);
@@ -72,15 +82,19 @@ public class CustomersOrdersService {
         addQuantityForAllOrderLinesProducts(customerOrder);
 
         double orderPrice = customerOrder.calculateOrderValue();
-        customerOrder.getCustomer().addCredits(orderPrice);
+        customersService.addCreditsForCustomer(customerOrder.getCustomerId(), orderPrice);
 
-        customerOrder.cancel();
-
-        return customerOrder;
+        return customerOrder.cancel().dto();
     }
 
-    public Iterable<CustomerOrderLine> findAllCustomerOrderLines(final UUID orderId) {
-        return findOrderById(orderId).getLines();
+    public Iterable<CustomerOrderLineDto> findAllCustomerOrderLines(final UUID orderId) {
+        return customersOrdersRepository
+                .findById(orderId)
+                .orElseThrow(() -> new OrderNotFoundException(orderId))
+                .getLines()
+                .stream()
+                .map(CustomerOrderLine::dto)
+                .collect(Collectors.toList());
     }
 
     private void addQuantityForAllOrderLinesProducts(final CustomerOrder customerOrder){
@@ -88,19 +102,7 @@ public class CustomersOrdersService {
                 .getLines()
                 .forEach(orderLine -> {
                     int productQuantity = orderLine.getQuantity();
-                    orderLine.getProduct().addToStock(productQuantity);
+                    productsService.addProductToStock(orderLine.getProductId(), productQuantity);
                 });
-    }
-
-    private Customer findCustomerById(final UUID customerId){
-        return customersRepository
-                .findById(customerId)
-                .orElseThrow(() -> new CustomerNotFoundException(customerId));
-    }
-
-    private Product findProductById(final UUID productId){
-        return productsRepository
-                .findById(productId)
-                .orElseThrow(() -> new ProductNotFoundException(productId));
     }
 }

@@ -1,5 +1,5 @@
 package com.mdzidko.ordering.customerorder;
 
-public enum CustomerOrderStatus {
+enum CustomerOrderStatus {
     NEW, CANCELLED
 }

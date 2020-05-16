@@ -10,7 +10,7 @@ import lombok.ToString;
 @ToString
 @EqualsAndHashCode
 @NoArgsConstructor
-public class Address {
+class Address {
     private String street;
     private String city;
     private String postalCode;
@@ -23,7 +23,7 @@ public class Address {
         this.local = local;
     }
 
-    public static Address create(final String street, final String city, final String postalCode, final int local){
+    static Address create(final String street, final String city, final String postalCode, final int local){
         return new Address(street, city, postalCode, local);
     }
 

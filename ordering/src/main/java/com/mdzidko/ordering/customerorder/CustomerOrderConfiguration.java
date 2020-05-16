@@ -1,7 +1,7 @@
 package com.mdzidko.ordering.customerorder;
 
-import com.mdzidko.ordering.customer.CustomersRepository;
-import com.mdzidko.ordering.product.ProductsRepository;
+import com.mdzidko.ordering.customer.CustomersService;
+import com.mdzidko.ordering.product.ProductsService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
@@ -11,8 +11,8 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 class CustomerOrderConfiguration {
     @Bean
     CustomersOrdersService customersOrdersService(CustomersOrdersRepository customersOrdersRepository,
-                                                  CustomersRepository customersRepository,
-                                                  ProductsRepository productsRepository){
-        return new CustomersOrdersService(customersOrdersRepository, customersRepository, productsRepository);
+                                                  CustomersService customersService,
+                                                  ProductsService productsService){
+        return new CustomersOrdersService(customersOrdersRepository, customersService, productsService);
     }
 }

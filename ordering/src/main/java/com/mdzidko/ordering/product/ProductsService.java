@@ -14,38 +14,44 @@ public class ProductsService {
         this.productsRepository = productsRepository;
     }
 
-    public Product addNewProduct(String code, String name, double price){
+    public ProductDto addNewProduct(String code, String name, double price){
         if(productsRepository.existsByCode(code))
             throw new ProductExistsException(code);
 
         Product product = Product.create(code, name, price);
 
-        return productsRepository.save(product);
+        return productsRepository.save(product).dto();
     }
 
-    public Iterable<Product> findAllProducts(){
+    public Iterable<ProductDto> findAllProducts(){
         return StreamSupport
                     .stream(productsRepository.findAll().spliterator(), false)
+                    .map(Product::dto)
                     .collect(Collectors.toList());
     }
 
-    public Product findProductById(UUID productId){
+    public ProductDto findProductById(UUID productId){
         return productsRepository
                 .findById(productId)
-                .orElseThrow(() -> new ProductNotFoundException(productId));
+                .orElseThrow(() -> new ProductNotFoundException(productId))
+                .dto();
     }
 
     @Transactional
-    public Product addProductToStock(UUID productId, int quantity){
+    public ProductDto addProductToStock(UUID productId, int quantity){
         Product product = productsRepository
                 .findById(productId)
                 .orElseThrow(() -> new ProductNotFoundException(productId));
-        return product.addToStock(quantity);
+
+        return product.addToStock(quantity).dto();
     }
 
     @Transactional
-    public Product removeProductFromStock(UUID productId, int quantity){
-        Product product = findProductById(productId);
-        return product.removeFromStock(quantity);
+    public ProductDto removeProductFromStock(UUID productId, int quantity){
+        Product product = productsRepository
+                .findById(productId)
+                .orElseThrow(() -> new ProductNotFoundException(productId));
+
+        return product.removeFromStock(quantity).dto();
     }
 }
