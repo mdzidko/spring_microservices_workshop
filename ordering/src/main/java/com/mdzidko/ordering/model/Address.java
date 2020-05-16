@@ -2,11 +2,14 @@ package com.mdzidko.ordering.model;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.ToString;
+
 
 @Getter
 @ToString
 @EqualsAndHashCode
+@NoArgsConstructor
 public class Address {
     private String street;
     private String city;

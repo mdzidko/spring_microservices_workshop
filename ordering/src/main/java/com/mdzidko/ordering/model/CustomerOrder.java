@@ -6,6 +6,10 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -14,9 +18,13 @@ import java.util.UUID;
 @NoArgsConstructor
 @EqualsAndHashCode(of = "id")
 @ToString
+@Entity
 public class CustomerOrder {
+    @Id
     private UUID id;
+    @OneToOne
     private Customer customer;
+    @OneToMany
     private List<CustomerOrderLine> lines = new ArrayList<>();
     private CustomerOrderStatus status = CustomerOrderStatus.NEW;
 

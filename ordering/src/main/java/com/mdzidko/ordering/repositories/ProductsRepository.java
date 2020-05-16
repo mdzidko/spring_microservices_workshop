@@ -1,13 +1,12 @@
 package com.mdzidko.ordering.repositories;
 
 import com.mdzidko.ordering.model.Product;
+import org.springframework.data.repository.CrudRepository;
+import org.springframework.stereotype.Repository;
 
-import java.util.Optional;
 import java.util.UUID;
 
-public interface ProductsRepository {
+@Repository
+public interface ProductsRepository extends CrudRepository<Product, UUID> {
     boolean existsByCode(String code);
-    Product save(Product product);
-    Iterable<Product> findAll();
-    Optional<Product> findById(UUID productId);
 }

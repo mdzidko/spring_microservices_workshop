@@ -4,6 +4,7 @@ import com.mdzidko.ordering.exceptions.CustomerNotFoundException;
 import com.mdzidko.ordering.model.Address;
 import com.mdzidko.ordering.model.Customer;
 import com.mdzidko.ordering.repositories.CustomersRepository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.UUID;
 
@@ -31,11 +32,13 @@ public class CustomersService {
                 .orElseThrow(() -> new CustomerNotFoundException(id));
     }
 
+    @Transactional
     public Customer addCreditsForCustomer(final UUID customerId, final double credits) {
         Customer customer = findCustomerById(customerId);
         return customer.addCredits(credits);
     }
 
+    @Transactional
     public Customer removeCreditsFromCustomer(final UUID customerId, final double credits) {
         Customer customer = findCustomerById(customerId);
         return customer.reserveCredits(credits);

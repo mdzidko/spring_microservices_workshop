@@ -31,33 +31,24 @@ class DataInitializer implements ApplicationListener<ContextRefreshedEvent> {
 
     private void initCustomers() {
         customersService
-                .addNewCustomer("Adrian", "Polityczny", "Wiejska", "Warszawa", "00-902", 4)
-                .addCredits(1000);
+                .addNewCustomer("Adrian", "Polityczny", "Wiejska", "Warszawa", "00-902", 4);
+        customersService
+                .addNewCustomer("Lucjan", "Diaboliczny", "Piekielna", "Hel", "66-666", 666);
 
         customersService
-                .addNewCustomer("Lucjan", "Diaboliczny", "Piekielna", "Hel", "66-666", 666)
-                .addCredits(666);
-
+                .findAllCustomers()
+                .forEach(customer -> customersService.addCreditsForCustomer(customer.getId(), 1000));
     }
 
-    private void initProducts() {
-        productsService
-                .addNewProduct("12344321", "Bucket", 10.0)
-                .addToStock(100);
-
-
-        productsService
-                .addNewProduct("98756632", "Scythe", 50.0)
-                .addToStock(20);
+    public void initProducts() {
+        productsService.addNewProduct("12344321", "Bucket", 10.0);
+        productsService.addNewProduct("98756632", "Scythe", 50.0);
+        productsService.addNewProduct("43298854", "Chain", 20.0);
+        productsService.addNewProduct("87566432", "Barrel", 100.0);
 
         productsService
-                .addNewProduct("43298854", "Chain", 20.0)
-                .addToStock(30);
-
-        productsService
-                .addNewProduct("87566432", "Barrel", 100.0)
-                .addToStock(10);
-
+                .findAllProducts()
+                .forEach(product -> productsService.addProductToStock(product.getId(), 20));
     }
 
     private void printCollection(Iterable<?> collection, String label){

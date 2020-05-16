@@ -8,8 +8,10 @@ import com.mdzidko.ordering.services.CustomersService;
 import com.mdzidko.ordering.services.ProductsService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 @Configuration
+@EnableTransactionManagement
 class OrderingConfiguration {
     @Bean
     CustomersService customersService(CustomersRepository customersRepository){
