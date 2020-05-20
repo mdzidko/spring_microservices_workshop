@@ -1,4 +1,4 @@
-package com.mdzidko.ordering.product;
+package com.mdzidko.ordering.products.domain.dto;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;

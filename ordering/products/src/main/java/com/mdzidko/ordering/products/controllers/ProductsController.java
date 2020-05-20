@@ -1,5 +1,7 @@
-package com.mdzidko.ordering.product;
+package com.mdzidko.ordering.products.controllers;
 
+import com.mdzidko.ordering.products.domain.dto.ProductDto;
+import com.mdzidko.ordering.products.domain.ProductsService;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 

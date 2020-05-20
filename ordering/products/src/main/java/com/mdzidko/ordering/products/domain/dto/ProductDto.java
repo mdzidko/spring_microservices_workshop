@@ -1,4 +1,4 @@
-package com.mdzidko.ordering.product;
+package com.mdzidko.ordering.products.domain.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

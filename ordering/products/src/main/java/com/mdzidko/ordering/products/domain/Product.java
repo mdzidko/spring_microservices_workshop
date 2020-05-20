@@ -1,5 +1,7 @@
-package com.mdzidko.ordering.product;
+package com.mdzidko.ordering.products.domain;
 
+import com.mdzidko.ordering.products.domain.dto.NotEnoughProductException;
+import com.mdzidko.ordering.products.domain.dto.ProductDto;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

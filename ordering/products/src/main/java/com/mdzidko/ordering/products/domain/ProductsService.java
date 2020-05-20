@@ -1,5 +1,8 @@
-package com.mdzidko.ordering.product;
+package com.mdzidko.ordering.products.domain;
 
+import com.mdzidko.ordering.products.domain.dto.ProductDto;
+import com.mdzidko.ordering.products.domain.dto.ProductExistsException;
+import com.mdzidko.ordering.products.domain.dto.ProductNotFoundException;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.UUID;

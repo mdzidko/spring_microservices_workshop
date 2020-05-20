@@ -1,4 +1,4 @@
-package com.mdzidko.ordering.product;
+package com.mdzidko.ordering.products.domain;
 
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
