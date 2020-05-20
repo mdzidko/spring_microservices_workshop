@@ -27,10 +27,7 @@ public class CustomersOrdersService {
 
 
     public CustomerOrderDto createCustomerOrder(final UUID customerId){
-        if(!customersService.customerExists(customerId)){
-            throw new CustomerDoesntExistsException(customerId);
-        }
-
+        customersService.customerExists(customerId);
         return customersOrdersRepository.save(CustomerOrder.create(customerId)).dto();
     }
 
@@ -42,9 +39,7 @@ public class CustomersOrdersService {
     }
 
     public Iterable<CustomerOrderDto> findAllCustomerOrders(final UUID customerId){
-        if(!customersService.customerExists(customerId)){
-            throw new CustomerDoesntExistsException(customerId);
-        }
+        customersService.customerExists(customerId);
 
         return StreamSupport
                 .stream(customersOrdersRepository.findAllByCustomerId(customerId).spliterator(), false)
