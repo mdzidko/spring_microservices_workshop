@@ -41,7 +41,6 @@ public class CustomersService {
                 .dto();
     }
 
-    @Transactional
     public CustomerDto addCreditsForCustomer(final UUID customerId, final double credits) {
         Customer customer = customersRepository
                 .findById(customerId)
@@ -50,7 +49,6 @@ public class CustomersService {
         return customer.addCredits(credits).dto();
     }
 
-    @Transactional
     public CustomerDto removeCreditsFromCustomer(final UUID customerId, final double credits) {
         Customer customer = customersRepository
                 .findById(customerId)

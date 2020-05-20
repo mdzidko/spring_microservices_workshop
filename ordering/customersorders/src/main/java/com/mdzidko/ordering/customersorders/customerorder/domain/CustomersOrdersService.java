@@ -59,7 +59,6 @@ public class CustomersOrdersService {
                 .dto();
     }
 
-    @Transactional
     public CustomerOrderDto addProductToOrder(final UUID orderId, final UUID productId, final int productQuantity){
         CustomerOrder customerOrder = customersOrdersRepository
                                         .findById(orderId)
@@ -72,14 +71,14 @@ public class CustomersOrdersService {
         ProductDto product = productsService.findProductById(productId);
         productsService.removeProductFromStock(productId, productQuantity);
 
-        customersService.removeCreditsFromCustomer(customerOrder.getCustomerId(), productQuantity * product.getPrice());
+        double productPrice = product.getPrice();
+        customersService.removeCreditsFromCustomer(customerOrder.getCustomerId(), productQuantity * productPrice);
 
         return customerOrder
-                .addNewLine(productId, productQuantity, product.getPrice())
+                .addNewLine(productId, productQuantity, productPrice)
                 .dto();
     }
 
-    @Transactional
     public CustomerOrderDto cancelOrder(final UUID orderId){
         CustomerOrder customerOrder = customersOrdersRepository
                 .findById(orderId)
