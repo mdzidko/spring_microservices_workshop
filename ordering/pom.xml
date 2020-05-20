@@ -21,9 +21,9 @@
     <name>ordering</name>
 
     <modules>
-        <module>ordering-mono</module>
         <module>products</module>
         <module>customers</module>
+        <module>customersorders</module>
     </modules>
 </project>
 
