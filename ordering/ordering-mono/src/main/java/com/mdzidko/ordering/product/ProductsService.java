@@ -37,7 +37,6 @@ public class ProductsService {
                 .dto();
     }
 
-    @Transactional
     public ProductDto addProductToStock(UUID productId, int quantity){
         Product product = productsRepository
                 .findById(productId)
@@ -46,7 +45,6 @@ public class ProductsService {
         return product.addToStock(quantity).dto();
     }
 
-    @Transactional
     public ProductDto removeProductFromStock(UUID productId, int quantity){
         Product product = productsRepository
                 .findById(productId)
