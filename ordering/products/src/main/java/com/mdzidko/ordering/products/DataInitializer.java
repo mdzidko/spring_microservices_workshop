@@ -1,18 +1,15 @@
-package com.mdzidko.ordering;
+package com.mdzidko.ordering.products;
 
-import com.mdzidko.ordering.customer.CustomersService;
-import com.mdzidko.ordering.products.product.ProductsService;
+import com.mdzidko.ordering.products.domain.ProductsService;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.stereotype.Component;
 
 @Component
 class DataInitializer implements ApplicationListener<ContextRefreshedEvent> {
-    private final CustomersService customersService;
     private final ProductsService productsService;
 
-    DataInitializer(final CustomersService customersService, final ProductsService productsService) {
-        this.customersService = customersService;
+    DataInitializer(final ProductsService productsService) {
         this.productsService = productsService;
     }
 
@@ -22,27 +19,9 @@ class DataInitializer implements ApplicationListener<ContextRefreshedEvent> {
     }
 
     private void initData(){
-        initCustomers();
         initProducts();
 
         printCollection(productsService.findAllProducts(), "Products");
-        printCollection(customersService.findAllCustomers(), "Customers");
-    }
-
-    private void initCustomers() {
-        try {
-            customersService
-                    .addNewCustomer("Adrian", "Polityczny", "Wiejska", "Warszawa", "00-902", 4);
-            customersService
-                    .addNewCustomer("Lucjan", "Diaboliczny", "Piekielna", "Hel", "66-666", 666);
-
-            customersService
-                    .findAllCustomers()
-                    .forEach(customer -> customersService.addCreditsForCustomer(customer.getId(), 1000));
-        }
-        catch(Exception ex){
-            System.out.println("Customers already initialized");
-        }
     }
 
     public void initProducts() {

@@ -1,5 +1,8 @@
-package com.mdzidko.ordering.product;
+package com.mdzidko.ordering.products.domain;
 
+import com.mdzidko.ordering.products.domain.dto.ProductDto;
+import com.mdzidko.ordering.products.domain.dto.ProductExistsException;
+import com.mdzidko.ordering.products.domain.dto.ProductNotFoundException;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.UUID;
@@ -37,7 +40,6 @@ public class ProductsService {
                 .dto();
     }
 
-    @Transactional
     public ProductDto addProductToStock(UUID productId, int quantity){
         Product product = productsRepository
                 .findById(productId)
@@ -46,7 +48,6 @@ public class ProductsService {
         return product.addToStock(quantity).dto();
     }
 
-    @Transactional
     public ProductDto removeProductFromStock(UUID productId, int quantity){
         Product product = productsRepository
                 .findById(productId)

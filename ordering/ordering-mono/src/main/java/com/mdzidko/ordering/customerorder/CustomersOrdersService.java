@@ -1,8 +1,8 @@
 package com.mdzidko.ordering.customerorder;
 
 import com.mdzidko.ordering.customer.CustomersService;
-import com.mdzidko.ordering.product.ProductDto;
-import com.mdzidko.ordering.product.ProductsService;
+import com.mdzidko.ordering.products.product.ProductDto;
+import com.mdzidko.ordering.products.product.ProductsService;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.UUID;
