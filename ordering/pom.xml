@@ -23,6 +23,7 @@
     <modules>
         <module>ordering-mono</module>
         <module>products</module>
+        <module>customers</module>
     </modules>
 </project>
 

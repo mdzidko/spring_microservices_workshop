@@ -1,6 +1,6 @@
 package com.mdzidko.ordering.customerorder;
 
-import com.mdzidko.ordering.customer.CustomersService;
+import com.mdzidko.ordering.customers.customer.CustomersService;
 import com.mdzidko.ordering.products.product.ProductsService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

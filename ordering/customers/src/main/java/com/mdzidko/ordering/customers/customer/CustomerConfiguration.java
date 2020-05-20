@@ -1,4 +1,4 @@
-package com.mdzidko.ordering.customer;
+package com.mdzidko.ordering.customers.customer;
 
 
 import org.springframework.context.annotation.Bean;

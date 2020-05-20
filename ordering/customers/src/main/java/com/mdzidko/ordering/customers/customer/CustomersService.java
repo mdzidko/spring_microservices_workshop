@@ -1,5 +1,8 @@
-package com.mdzidko.ordering.customer;
+package com.mdzidko.ordering.customers.customer;
 
+import com.mdzidko.ordering.customers.customer.dto.CustomerAlreadyExistsException;
+import com.mdzidko.ordering.customers.customer.dto.CustomerDto;
+import com.mdzidko.ordering.customers.customer.dto.CustomerNotFoundException;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.UUID;
@@ -38,7 +41,6 @@ public class CustomersService {
                 .dto();
     }
 
-    @Transactional
     public CustomerDto addCreditsForCustomer(final UUID customerId, final double credits) {
         Customer customer = customersRepository
                 .findById(customerId)
@@ -47,7 +49,6 @@ public class CustomersService {
         return customer.addCredits(credits).dto();
     }
 
-    @Transactional
     public CustomerDto removeCreditsFromCustomer(final UUID customerId, final double credits) {
         Customer customer = customersRepository
                 .findById(customerId)

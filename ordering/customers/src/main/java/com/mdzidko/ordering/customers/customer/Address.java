@@ -1,4 +1,4 @@
-package com.mdzidko.ordering.customer;
+package com.mdzidko.ordering.customers.customer;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
