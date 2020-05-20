@@ -1,5 +1,8 @@
-package com.mdzidko.ordering.customer;
+package com.mdzidko.ordering.customers.customer;
 
+import com.mdzidko.ordering.customers.customer.dto.CustomerAlreadyExistsException;
+import com.mdzidko.ordering.customers.customer.dto.CustomerDto;
+import com.mdzidko.ordering.customers.customer.dto.CustomerNotFoundException;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.UUID;

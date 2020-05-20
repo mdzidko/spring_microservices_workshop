@@ -1,5 +1,7 @@
-package com.mdzidko.ordering.customer;
+package com.mdzidko.ordering.customers.customer;
 
+import com.mdzidko.ordering.customers.customer.dto.CustomerDto;
+import com.mdzidko.ordering.customers.customer.dto.NotEnoughCreditsException;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
