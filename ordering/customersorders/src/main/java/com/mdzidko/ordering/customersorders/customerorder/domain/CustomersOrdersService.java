@@ -1,6 +1,5 @@
 package com.mdzidko.ordering.customersorders.customerorder.domain;
 
-import com.mdzidko.ordering.customersorders.customer.CustomerDoesntExistsException;
 import com.mdzidko.ordering.customersorders.customer.CustomersService;
 import com.mdzidko.ordering.customersorders.customerorder.domain.dto.BadOrderStatusException;
 import com.mdzidko.ordering.customersorders.customerorder.domain.dto.CustomerOrderDto;
@@ -67,10 +66,11 @@ public class CustomersOrdersService {
         ProductDto product = productsService.findProductById(productId);
         productsService.removeProductFromStock(productId, productQuantity);
 
-        customersService.removeCreditsFromCustomer(customerOrder.getCustomerId(), productQuantity * product.getPrice());
+        double productPrice = product.getPrice();
+        customersService.removeCreditsFromCustomer(customerOrder.getCustomerId(), productQuantity * productPrice);
 
         return customerOrder
-                .addNewLine(productId, productQuantity, product.getPrice())
+                .addNewLine(productId, productQuantity, productPrice)
                 .dto();
     }
 

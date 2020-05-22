@@ -2,7 +2,6 @@ package com.mdzidko.ordering.customersorders;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.http.client.ClientHttpResponse;
@@ -20,8 +19,7 @@ public class HttpErrorExtractor{
     @Data
     @NoArgsConstructor
     @AllArgsConstructor
-    @Builder
-    private class ErrorMessage {
+    private static class ErrorMessage {
         private String timestamp;
         private int status;
         private String error;
