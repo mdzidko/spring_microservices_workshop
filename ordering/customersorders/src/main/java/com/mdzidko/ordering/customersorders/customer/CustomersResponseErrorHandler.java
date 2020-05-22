@@ -19,5 +19,11 @@ class CustomersResponseErrorHandler implements ResponseErrorHandler {
         if(clientHttpResponse.getStatusCode() == HttpStatus.NOT_FOUND){
             throw new CustomerDoesntExistsException(HttpErrorExtractor.getMessage(clientHttpResponse));
         }
+        if(clientHttpResponse.getStatusCode() == HttpStatus.BAD_REQUEST){
+            throw new NotEnoughCreditsException(HttpErrorExtractor.getMessage(clientHttpResponse));
+        }
+        else{
+            throw new RuntimeException(HttpErrorExtractor.getMessage(clientHttpResponse));
+        }
     }
 }
