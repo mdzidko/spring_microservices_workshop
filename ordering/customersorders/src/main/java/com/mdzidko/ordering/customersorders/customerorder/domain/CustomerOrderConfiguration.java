@@ -14,13 +14,15 @@ class CustomerOrderConfiguration {
         return new CustomersService(restTemplateBuilder);
     }
 
-    private ProductsService productsService() {
-        return new ProductsService();
+    private ProductsService productsService(RestTemplateBuilder restTemplateBuilder) {
+        return new ProductsService(restTemplateBuilder);
     }
 
     @Bean
     CustomersOrdersService customersOrdersService(CustomersOrdersRepository customersOrdersRepository,
                                                   RestTemplateBuilder restTemplateBuilder){
-        return new CustomersOrdersService(customersOrdersRepository, customersService(restTemplateBuilder), productsService());
+        return new CustomersOrdersService(customersOrdersRepository,
+                                            customersService(restTemplateBuilder),
+                                            productsService(restTemplateBuilder));
     }
 }
