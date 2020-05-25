@@ -66,10 +66,11 @@ public class CustomersOrdersService {
         ProductDto product = productsService.findProductById(productId);
         productsService.removeProductFromStock(productId, productQuantity);
 
-        customersService.removeCreditsFromCustomer(customerOrder.getCustomerId(), productQuantity * product.getPrice());
+        double productPrice = product.getPrice();
+        customersService.removeCreditsFromCustomer(customerOrder.getCustomerId(), productQuantity * productPrice );
 
         return customerOrder
-                .addNewLine(productId, productQuantity, 6)
+                .addNewLine(productId, productQuantity, productPrice )
                 .dto();
     }
 
