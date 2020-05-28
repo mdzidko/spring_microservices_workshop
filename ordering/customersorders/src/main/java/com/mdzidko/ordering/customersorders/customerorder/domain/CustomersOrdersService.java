@@ -1,6 +1,7 @@
 package com.mdzidko.ordering.customersorders.customerorder.domain;
 
 import com.mdzidko.ordering.customersorders.customer.CustomersService;
+import com.mdzidko.ordering.customersorders.customer.NotEnoughCreditsException;
 import com.mdzidko.ordering.customersorders.customerorder.domain.dto.BadOrderStatusException;
 import com.mdzidko.ordering.customersorders.customerorder.domain.dto.CustomerOrderDto;
 import com.mdzidko.ordering.customersorders.customerorder.domain.dto.OrderNotFoundException;
@@ -53,6 +54,7 @@ public class CustomersOrdersService {
                 .dto();
     }
 
+    @Transactional
     public CustomerOrderDto addProductToOrder(final UUID orderId, final UUID productId, final int productQuantity){
         CustomerOrder customerOrder = customersOrdersRepository
                                         .findById(orderId)
@@ -63,16 +65,24 @@ public class CustomersOrdersService {
         }
 
         ProductDto product = productsService.findProductById(productId);
+        double productPrice = product.getPrice();
+
+        customerOrder.addNewLine(productId, productQuantity, productPrice);
+
         productsService.removeProductFromStock(productId, productQuantity);
 
-        double productPrice = product.getPrice();
-        customersService.removeCreditsFromCustomer(customerOrder.getCustomerId(), productQuantity * productPrice );
+        try{
+            customersService.removeCreditsFromCustomer(customerOrder.getCustomerId(), productQuantity * productPrice );
+        }
+        catch(NotEnoughCreditsException ex){
+            productsService.addProductToStock(productId, productQuantity);
+            throw ex;
+        }
 
-        return customerOrder
-                .addNewLine(productId, productQuantity, productPrice )
-                .dto();
+        return customerOrder.dto();
     }
 
+    @Transactional
     public CustomerOrderDto cancelOrder(final UUID orderId){
         CustomerOrder customerOrder = customersOrdersRepository
                 .findById(orderId)
@@ -82,12 +92,14 @@ public class CustomersOrdersService {
             throw new BadOrderStatusException(customerOrder.getStatus().toString());
         }
 
+        customerOrder.cancel();
+
         addQuantityForAllOrderLinesProducts(customerOrder);
 
         double orderPrice = customerOrder.calculateOrderValue();
         customersService.addCreditsForCustomer(customerOrder.getCustomerId(), orderPrice);
 
-        return customerOrder.cancel().dto();
+        return customerOrder.dto();
     }
 
     public Iterable<CustomerOrderLineDto> findAllCustomerOrderLines(final UUID orderId) {
