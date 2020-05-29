@@ -5,24 +5,29 @@ import com.mdzidko.ordering.customersorders.product.ProductsService;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.retry.annotation.EnableRetry;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 @Configuration
 @EnableTransactionManagement
+@EnableRetry
 class CustomerOrderConfiguration {
-    private CustomersService customersService(RestTemplateBuilder restTemplateBuilder){
+    @Bean
+    CustomersService customersService(RestTemplateBuilder restTemplateBuilder){
         return new CustomersService(restTemplateBuilder);
     }
 
-    private ProductsService productsService(RestTemplateBuilder restTemplateBuilder) {
+    @Bean
+    ProductsService productsService(RestTemplateBuilder restTemplateBuilder) {
         return new ProductsService(restTemplateBuilder);
     }
 
     @Bean
     CustomersOrdersService customersOrdersService(CustomersOrdersRepository customersOrdersRepository,
-                                                  RestTemplateBuilder restTemplateBuilder){
+                                                  CustomersService customersService,
+                                                  ProductsService productsService){
         return new CustomersOrdersService(customersOrdersRepository,
-                                            customersService(restTemplateBuilder),
-                                            productsService(restTemplateBuilder));
+                                            customersService,
+                                            productsService);
     }
 }

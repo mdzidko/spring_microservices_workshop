@@ -74,7 +74,7 @@ public class CustomersOrdersService {
         try{
             customersService.removeCreditsFromCustomer(customerOrder.getCustomerId(), productQuantity * productPrice );
         }
-        catch(NotEnoughCreditsException ex){
+        catch(Exception ex){
             productsService.addProductToStock(productId, productQuantity);
             throw ex;
         }
