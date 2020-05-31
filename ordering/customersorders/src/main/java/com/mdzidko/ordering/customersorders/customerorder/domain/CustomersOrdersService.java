@@ -1,14 +1,17 @@
 package com.mdzidko.ordering.customersorders.customerorder.domain;
 
 import com.mdzidko.ordering.customersorders.customer.CustomersService;
-import com.mdzidko.ordering.customersorders.customer.NotEnoughCreditsException;
 import com.mdzidko.ordering.customersorders.customerorder.domain.dto.BadOrderStatusException;
 import com.mdzidko.ordering.customersorders.customerorder.domain.dto.CustomerOrderDto;
 import com.mdzidko.ordering.customersorders.customerorder.domain.dto.OrderNotFoundException;
 import com.mdzidko.ordering.customersorders.product.ProductDto;
 import com.mdzidko.ordering.customersorders.product.ProductsService;
+import org.hibernate.exception.JDBCConnectionException;
+import org.springframework.retry.annotation.CircuitBreaker;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.net.ConnectException;
+import java.net.SocketTimeoutException;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
@@ -25,12 +28,24 @@ public class CustomersOrdersService {
         this.productsService = productsService;
     }
 
-
+    @CircuitBreaker(
+            maxAttempts = 2,
+            resetTimeout = 10000,
+            openTimeout = 10000,
+            include = {ConnectException.class,
+                    SocketTimeoutException.class,
+                    JDBCConnectionException.class}
+    )
     public CustomerOrderDto createCustomerOrder(final UUID customerId){
         customersService.customerExists(customerId);
         return customersOrdersRepository.save(CustomerOrder.create(customerId)).dto();
     }
 
+    @CircuitBreaker(
+            maxAttempts = 1,
+            resetTimeout = 10000,
+            include = {JDBCConnectionException.class}
+    )
     public Iterable<CustomerOrderDto> findAllOrders(){
         return StreamSupport
                 .stream(customersOrdersRepository.findAll().spliterator(), false)
@@ -38,6 +53,14 @@ public class CustomersOrdersService {
                 .collect(Collectors.toList());
     }
 
+    @CircuitBreaker(
+            maxAttempts = 2,
+            resetTimeout = 10000,
+            openTimeout = 10000,
+            include = {ConnectException.class,
+                    SocketTimeoutException.class,
+                    JDBCConnectionException.class}
+    )
     public Iterable<CustomerOrderDto> findAllCustomerOrders(final UUID customerId){
         customersService.customerExists(customerId);
 
@@ -47,6 +70,11 @@ public class CustomersOrdersService {
                 .collect(Collectors.toList());
     }
 
+    @CircuitBreaker(
+            maxAttempts = 1,
+            resetTimeout = 10000,
+            include = {JDBCConnectionException.class}
+    )
     public CustomerOrderDto findOrderById(final UUID orderId){
         return customersOrdersRepository
                 .findById(orderId)
@@ -54,6 +82,14 @@ public class CustomersOrdersService {
                 .dto();
     }
 
+    @CircuitBreaker(
+            maxAttempts = 2,
+            resetTimeout = 10000,
+            openTimeout = 10000,
+            include = {ConnectException.class,
+                    SocketTimeoutException.class,
+                    JDBCConnectionException.class}
+    )
     @Transactional
     public CustomerOrderDto addProductToOrder(final UUID orderId, final UUID productId, final int productQuantity){
         CustomerOrder customerOrder = customersOrdersRepository
@@ -82,6 +118,14 @@ public class CustomersOrdersService {
         return customerOrder.dto();
     }
 
+    @CircuitBreaker(
+            maxAttempts = 2,
+            resetTimeout = 10000,
+            openTimeout = 10000,
+            include = {ConnectException.class,
+                    SocketTimeoutException.class,
+                    JDBCConnectionException.class}
+    )
     @Transactional
     public CustomerOrderDto cancelOrder(final UUID orderId){
         CustomerOrder customerOrder = customersOrdersRepository
@@ -102,6 +146,11 @@ public class CustomersOrdersService {
         return customerOrder.dto();
     }
 
+    @CircuitBreaker(
+            maxAttempts = 1,
+            resetTimeout = 10000,
+            include = {JDBCConnectionException.class}
+    )
     public Iterable<CustomerOrderLineDto> findAllCustomerOrderLines(final UUID orderId) {
         return customersOrdersRepository
                 .findById(orderId)

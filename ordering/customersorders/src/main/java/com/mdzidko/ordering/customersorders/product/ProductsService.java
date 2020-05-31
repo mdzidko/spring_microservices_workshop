@@ -26,7 +26,7 @@ public class ProductsService {
 
     @Retryable(
             include = {ConnectException.class, SocketTimeoutException.class},
-            maxAttempts = 5,
+            maxAttempts = 3,
             backoff = @Backoff(delay = 1000, multiplier = 2)
     )
     public ProductDto findProductById(final UUID productId) {
@@ -36,7 +36,7 @@ public class ProductsService {
 
     @Retryable(
             include = {ConnectException.class, SocketTimeoutException.class},
-            maxAttempts = 5,
+            maxAttempts = 3,
             backoff = @Backoff(delay = 1000, multiplier = 2)
     )
     public void removeProductFromStock(final UUID productId, final int productQuantity) {
@@ -49,7 +49,7 @@ public class ProductsService {
 
     @Retryable(
             include = {ConnectException.class, SocketTimeoutException.class},
-            maxAttempts = 5,
+            maxAttempts = 3,
             backoff = @Backoff(delay = 1000, multiplier = 2)
     )
     public void addProductToStock(final UUID productId, final int productQuantity) {

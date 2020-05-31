@@ -26,7 +26,7 @@ public class CustomersService {
 
     @Retryable(
             include = {ConnectException.class, SocketTimeoutException.class},
-            maxAttempts = 5,
+            maxAttempts = 3,
             backoff = @Backoff(delay = 1000, multiplier = 2)
     )
     public boolean customerExists(final UUID customerId) {
@@ -37,7 +37,7 @@ public class CustomersService {
 
     @Retryable(
             include = {ConnectException.class, SocketTimeoutException.class},
-            maxAttempts = 5,
+            maxAttempts = 3,
             backoff = @Backoff(delay = 1000, multiplier = 2)
     )
     public void removeCreditsFromCustomer(final UUID customerId, final double credits) {
@@ -50,7 +50,7 @@ public class CustomersService {
 
     @Retryable(
             include = {ConnectException.class, SocketTimeoutException.class},
-            maxAttempts = 5,
+            maxAttempts = 3,
             backoff = @Backoff(delay = 1000, multiplier = 2)
     )
     public void addCreditsForCustomer(final UUID customerId, final double credits) {
