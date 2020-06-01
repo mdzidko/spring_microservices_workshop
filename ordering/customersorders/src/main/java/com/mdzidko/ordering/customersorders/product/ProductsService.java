@@ -1,6 +1,5 @@
 package com.mdzidko.ordering.customersorders.product;
 
-import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.retry.annotation.Backoff;
@@ -9,19 +8,14 @@ import org.springframework.web.client.RestTemplate;
 
 import java.net.ConnectException;
 import java.net.SocketTimeoutException;
-import java.time.Duration;
 import java.util.UUID;
 
 
 public class ProductsService {
     private final RestTemplate restTemplate;
 
-    public ProductsService(final RestTemplateBuilder restTemplateBuilder) {
-        restTemplate = restTemplateBuilder
-                .rootUri("http://localhost:8082/products")
-                .errorHandler(new ProductsResponseErrorHandler())
-                .setConnectTimeout(Duration.ofMillis(1000))
-                .build();
+    public ProductsService(final RestTemplate restTemplate) {
+        this.restTemplate = restTemplate;
     }
 
     @Retryable(

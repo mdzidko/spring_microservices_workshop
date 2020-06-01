@@ -1,6 +1,5 @@
 package com.mdzidko.ordering.customersorders.customer;
 
-import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
@@ -10,18 +9,13 @@ import org.springframework.web.client.RestTemplate;
 
 import java.net.ConnectException;
 import java.net.SocketTimeoutException;
-import java.time.Duration;
 import java.util.UUID;
 
 public class CustomersService {
     private final RestTemplate restTemplate;
 
-    public CustomersService(final RestTemplateBuilder restTemplateBuilder) {
-        restTemplate = restTemplateBuilder
-                .rootUri("http://localhost:8083/customers")
-                .errorHandler(new CustomersResponseErrorHandler())
-                .setConnectTimeout(Duration.ofMillis(1000))
-                .build();
+    public CustomersService(final RestTemplate restTemplate) {
+        this.restTemplate = restTemplate;
     }
 
     @Retryable(
