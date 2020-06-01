@@ -6,6 +6,7 @@ import com.mdzidko.ordering.customersorders.customerorder.domain.dto.CustomerOrd
 import com.mdzidko.ordering.customersorders.customerorder.domain.dto.OrderNotFoundException;
 import com.mdzidko.ordering.customersorders.product.ProductDto;
 import com.mdzidko.ordering.customersorders.product.ProductsService;
+import lombok.extern.slf4j.Slf4j;
 import org.hibernate.exception.JDBCConnectionException;
 import org.springframework.retry.annotation.CircuitBreaker;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,6 +17,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
+@Slf4j
 public class CustomersOrdersService {
     private final CustomersOrdersRepository customersOrdersRepository;
     private final CustomersService customersService;
@@ -115,6 +117,8 @@ public class CustomersOrdersService {
             throw ex;
         }
 
+        log.debug("Added " + productQuantity + " products with id = " + productId + " to order " + orderId);
+
         return customerOrder.dto();
     }
 
@@ -142,6 +146,8 @@ public class CustomersOrdersService {
 
         double orderPrice = customerOrder.calculateOrderValue();
         customersService.addCreditsForCustomer(customerOrder.getCustomerId(), orderPrice);
+
+        log.debug("Cancelled order  " + orderId);
 
         return customerOrder.dto();
     }

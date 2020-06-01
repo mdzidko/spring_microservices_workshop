@@ -10,7 +10,6 @@ import java.net.ConnectException;
 import java.net.SocketTimeoutException;
 import java.util.UUID;
 
-
 public class ProductsService {
     private final RestTemplate restTemplate;
 
