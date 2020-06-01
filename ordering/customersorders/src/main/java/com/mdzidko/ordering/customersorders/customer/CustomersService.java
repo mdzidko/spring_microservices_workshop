@@ -19,7 +19,7 @@ public class CustomersService {
     }
 
     @Retryable(
-            include = {ConnectException.class, SocketTimeoutException.class},
+            include = {ConnectException.class, SocketTimeoutException.class, IllegalStateException.class},
             maxAttempts = 3,
             backoff = @Backoff(delay = 1000, multiplier = 2)
     )
@@ -30,7 +30,7 @@ public class CustomersService {
     }
 
     @Retryable(
-            include = {ConnectException.class, SocketTimeoutException.class},
+            include = {ConnectException.class, SocketTimeoutException.class, IllegalStateException.class},
             maxAttempts = 3,
             backoff = @Backoff(delay = 1000, multiplier = 2)
     )
@@ -43,7 +43,7 @@ public class CustomersService {
     }
 
     @Retryable(
-            include = {ConnectException.class, SocketTimeoutException.class},
+            include = {ConnectException.class, SocketTimeoutException.class, IllegalStateException.class},
             maxAttempts = 3,
             backoff = @Backoff(delay = 1000, multiplier = 2)
     )

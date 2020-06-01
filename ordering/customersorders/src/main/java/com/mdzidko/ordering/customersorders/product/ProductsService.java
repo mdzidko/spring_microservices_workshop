@@ -10,7 +10,6 @@ import java.net.ConnectException;
 import java.net.SocketTimeoutException;
 import java.util.UUID;
 
-
 public class ProductsService {
     private final RestTemplate restTemplate;
 
@@ -19,7 +18,7 @@ public class ProductsService {
     }
 
     @Retryable(
-            include = {ConnectException.class, SocketTimeoutException.class},
+            include = {ConnectException.class, SocketTimeoutException.class, IllegalStateException.class},
             maxAttempts = 3,
             backoff = @Backoff(delay = 1000, multiplier = 2)
     )
@@ -29,7 +28,7 @@ public class ProductsService {
     }
 
     @Retryable(
-            include = {ConnectException.class, SocketTimeoutException.class},
+            include = {ConnectException.class, SocketTimeoutException.class, IllegalStateException.class},
             maxAttempts = 3,
             backoff = @Backoff(delay = 1000, multiplier = 2)
     )
@@ -42,7 +41,7 @@ public class ProductsService {
     }
 
     @Retryable(
-            include = {ConnectException.class, SocketTimeoutException.class},
+            include = {ConnectException.class, SocketTimeoutException.class, IllegalStateException.class},
             maxAttempts = 3,
             backoff = @Backoff(delay = 1000, multiplier = 2)
     )
