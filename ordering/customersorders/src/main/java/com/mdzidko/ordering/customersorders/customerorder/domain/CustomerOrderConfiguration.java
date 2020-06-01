@@ -13,16 +13,6 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @EnableRetry
 class CustomerOrderConfiguration {
     @Bean
-    CustomersService customersService(RestTemplateBuilder restTemplateBuilder){
-        return new CustomersService(restTemplateBuilder);
-    }
-
-    @Bean
-    ProductsService productsService(RestTemplateBuilder restTemplateBuilder) {
-        return new ProductsService(restTemplateBuilder);
-    }
-
-    @Bean
     CustomersOrdersService customersOrdersService(CustomersOrdersRepository customersOrdersRepository,
                                                   CustomersService customersService,
                                                   ProductsService productsService){
