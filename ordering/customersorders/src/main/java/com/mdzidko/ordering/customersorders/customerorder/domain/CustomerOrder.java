@@ -53,8 +53,32 @@ class CustomerOrder {
         return this;
     }
 
+    CustomerOrder removeProduct(final UUID productId, final int productQuantity) {
+        lines
+                .stream()
+                .filter(orderLine -> orderLine.getProductId().equals(productId))
+                .findFirst()
+                .ifPresent(
+                        line -> {
+                            if(line.getQuantity() == productQuantity){
+                                lines.remove(line);
+                            }
+                            else{
+                                line.removeQuantity(productQuantity);
+                            }
+                        }
+                );
+
+        return this;
+    }
+
     CustomerOrder cancel() {
         this.status = CustomerOrderStatus.CANCELLED;
+        return this;
+    }
+
+    CustomerOrder setAsNew() {
+        this.status = CustomerOrderStatus.NEW;
         return this;
     }
 

@@ -1,4 +1,4 @@
-package com.mdzidko.ordering.customersorders.customerorder.domain;
+package com.mdzidko.ordering.customersorders.customerorder.controllers;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

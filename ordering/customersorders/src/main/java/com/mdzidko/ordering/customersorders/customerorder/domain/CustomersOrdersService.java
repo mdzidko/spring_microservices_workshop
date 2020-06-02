@@ -3,13 +3,13 @@ package com.mdzidko.ordering.customersorders.customerorder.domain;
 import com.mdzidko.ordering.customersorders.customer.CustomersService;
 import com.mdzidko.ordering.customersorders.customerorder.domain.dto.BadOrderStatusException;
 import com.mdzidko.ordering.customersorders.customerorder.domain.dto.CustomerOrderDto;
+import com.mdzidko.ordering.customersorders.customerorder.domain.dto.CustomerOrderLineDto;
 import com.mdzidko.ordering.customersorders.customerorder.domain.dto.OrderNotFoundException;
 import com.mdzidko.ordering.customersorders.product.ProductDto;
 import com.mdzidko.ordering.customersorders.product.ProductsService;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.exception.JDBCConnectionException;
 import org.springframework.retry.annotation.CircuitBreaker;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.net.ConnectException;
 import java.net.SocketTimeoutException;
@@ -92,28 +92,26 @@ public class CustomersOrdersService {
                     SocketTimeoutException.class,
                     JDBCConnectionException.class}
     )
-    @Transactional
     public CustomerOrderDto addProductToOrder(final UUID orderId, final UUID productId, final int productQuantity){
-        CustomerOrder customerOrder = customersOrdersRepository
-                                        .findById(orderId)
-                                        .orElseThrow(() -> new OrderNotFoundException(orderId));
-
-        if(customerOrder.getStatus() != CustomerOrderStatus.NEW){
-            throw new BadOrderStatusException(customerOrder.getStatus().toString());
-        }
-
         ProductDto product = productsService.findProductById(productId);
         double productPrice = product.getPrice();
 
-        customerOrder.addNewLine(productId, productQuantity, productPrice);
+        CustomerOrder customerOrder = createNewOrderLine(orderId, productId, productQuantity, productPrice);
 
-        productsService.removeProductFromStock(productId, productQuantity);
+        try {
+            productsService.removeProductFromStock(productId, productQuantity);
+        }
+        catch(Exception ex){
+            removeProductFromOrder(orderId, productId, productQuantity);
+            throw ex;
+        }
 
         try{
             customersService.removeCreditsFromCustomer(customerOrder.getCustomerId(), productQuantity * productPrice );
         }
         catch(Exception ex){
             productsService.addProductToStock(productId, productQuantity);
+            removeProductFromOrder(orderId, productId, productQuantity);
             throw ex;
         }
 
@@ -130,7 +128,6 @@ public class CustomersOrdersService {
                     SocketTimeoutException.class,
                     JDBCConnectionException.class}
     )
-    @Transactional
     public CustomerOrderDto cancelOrder(final UUID orderId){
         CustomerOrder customerOrder = customersOrdersRepository
                 .findById(orderId)
@@ -140,12 +137,27 @@ public class CustomersOrdersService {
             throw new BadOrderStatusException(customerOrder.getStatus().toString());
         }
 
-        customerOrder.cancel();
-
-        addQuantityForAllOrderLinesProducts(customerOrder);
-
         double orderPrice = customerOrder.calculateOrderValue();
-        customersService.addCreditsForCustomer(customerOrder.getCustomerId(), orderPrice);
+
+        customerOrder.cancel();
+        customersOrdersRepository.save(customerOrder);
+
+        try {
+            addQuantityForAllOrderLinesProducts(customerOrder);
+        }
+        catch(Exception ex){
+            customerOrder.setAsNew();
+            throw ex;
+        }
+
+        try {
+            customersService.addCreditsForCustomer(customerOrder.getCustomerId(), orderPrice);
+        }
+        catch(Exception ex){
+            customerOrder.setAsNew();
+            removeQuantityForAllOrderLinesProducts(customerOrder);
+            throw ex;
+        }
 
         log.debug("Cancelled order  " + orderId);
 
@@ -174,5 +186,43 @@ public class CustomersOrdersService {
                     int productQuantity = orderLine.getQuantity();
                     productsService.addProductToStock(orderLine.getProductId(), productQuantity);
                 });
+    }
+
+    private void removeQuantityForAllOrderLinesProducts(final CustomerOrder customerOrder){
+        customerOrder
+                .getLines()
+                .forEach(orderLine -> {
+                    int productQuantity = orderLine.getQuantity();
+                    productsService.removeProductFromStock(orderLine.getProductId(), productQuantity);
+                });
+    }
+
+    private void removeProductFromOrder(final UUID orderId,
+                                        final UUID productId,
+                                        final int productQuantity) {
+
+        CustomerOrder customerOrder = customersOrdersRepository
+                .findById(orderId)
+                .orElseThrow(() -> new OrderNotFoundException(orderId));
+
+        customersOrdersRepository.save(
+                customerOrder.removeProduct(productId, productQuantity));
+    }
+
+    private CustomerOrder createNewOrderLine(final UUID orderId,
+                                             final UUID productId,
+                                             final int productQuantity,
+                                             final double productPrice) {
+
+        CustomerOrder customerOrder = customersOrdersRepository
+                .findById(orderId)
+                .orElseThrow(() -> new OrderNotFoundException(orderId));
+
+        if(customerOrder.getStatus() != CustomerOrderStatus.NEW){
+            throw new BadOrderStatusException(customerOrder.getStatus().toString());
+        }
+
+        return customersOrdersRepository.save(
+                customerOrder.addNewLine(productId, productQuantity, productPrice));
     }
 }

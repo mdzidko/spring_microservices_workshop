@@ -1,5 +1,6 @@
 package com.mdzidko.ordering.customersorders.customerorder.domain;
 
+import com.mdzidko.ordering.customersorders.customerorder.domain.dto.CustomerOrderLineDto;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -34,6 +35,11 @@ class CustomerOrderLine {
 
     CustomerOrderLine addQuantity(final int productQuantity) {
         this.quantity += productQuantity;
+        return this;
+    }
+
+    CustomerOrderLine removeQuantity(final int productQuantity) {
+        this.quantity -= productQuantity;
         return this;
     }
 
