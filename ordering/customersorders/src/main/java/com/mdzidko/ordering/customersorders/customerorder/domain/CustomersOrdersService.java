@@ -147,6 +147,7 @@ public class CustomersOrdersService {
         }
         catch(Exception ex){
             customerOrder.setAsNew();
+            customersOrdersRepository.save(customerOrder);
             throw ex;
         }
 
@@ -155,6 +156,7 @@ public class CustomersOrdersService {
         }
         catch(Exception ex){
             customerOrder.setAsNew();
+            customersOrdersRepository.save(customerOrder);
             removeQuantityForAllOrderLinesProducts(customerOrder);
             throw ex;
         }
