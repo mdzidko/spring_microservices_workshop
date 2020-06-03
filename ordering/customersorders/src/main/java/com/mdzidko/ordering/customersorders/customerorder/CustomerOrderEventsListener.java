@@ -2,6 +2,7 @@ package com.mdzidko.ordering.customersorders.customerorder;
 
 import com.mdzidko.ordering.customersorders.CustomersOrdersEventsSource;
 import com.mdzidko.ordering.customersorders.customerorder.domain.event.CustomerOrderCanceledEvent;
+import com.mdzidko.ordering.customersorders.customerorder.domain.event.CustomerOrderEventType;
 import com.mdzidko.ordering.customersorders.customerorder.domain.event.ProductAddedToCustomerOrderEvent;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cloud.stream.annotation.EnableBinding;
@@ -24,6 +25,7 @@ class CustomerOrderEventsListener {
     void onCustomerOrderCanceledEvent(CustomerOrderCanceledEvent event){
         Message<CustomerOrderCanceledEvent> message = MessageBuilder
                 .withPayload(event)
+                .setHeader("type", CustomerOrderEventType.ORDER_CANCELED)
                 .build();
 
         eventsSource.customersOrdersEvents().send(message);
@@ -35,6 +37,7 @@ class CustomerOrderEventsListener {
     void onProductAddedToCustomerOrderEvent (ProductAddedToCustomerOrderEvent event){
         Message<ProductAddedToCustomerOrderEvent> message = MessageBuilder
                 .withPayload(event)
+                .setHeader("type", CustomerOrderEventType.PRODUCT_ADDED_TO_ORDER)
                 .build();
 
         eventsSource.customersOrdersEvents().send(message);
