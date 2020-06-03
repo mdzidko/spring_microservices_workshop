@@ -98,23 +98,6 @@ public class CustomersOrdersService {
 
         CustomerOrder customerOrder = createNewOrderLine(orderId, productId, productQuantity, productPrice);
 
-        try {
-            productsService.removeProductFromStock(productId, productQuantity);
-        }
-        catch(Exception ex){
-            removeProductFromOrder(orderId, productId, productQuantity);
-            throw ex;
-        }
-
-        try{
-            customersService.removeCreditsFromCustomer(customerOrder.getCustomerId(), productQuantity * productPrice );
-        }
-        catch(Exception ex){
-            productsService.addProductToStock(productId, productQuantity);
-            removeProductFromOrder(orderId, productId, productQuantity);
-            throw ex;
-        }
-
         log.debug("Added " + productQuantity + " products with id = " + productId + " to order " + orderId);
 
         return customerOrder.dto();
@@ -137,29 +120,8 @@ public class CustomersOrdersService {
             throw new BadOrderStatusException(customerOrder.getStatus().toString());
         }
 
-        double orderPrice = customerOrder.calculateOrderValue();
-
         customerOrder.cancel();
         customersOrdersRepository.save(customerOrder);
-
-        try {
-            addQuantityForAllOrderLinesProducts(customerOrder);
-        }
-        catch(Exception ex){
-            customerOrder.setAsNew();
-            customersOrdersRepository.save(customerOrder);
-            throw ex;
-        }
-
-        try {
-            customersService.addCreditsForCustomer(customerOrder.getCustomerId(), orderPrice);
-        }
-        catch(Exception ex){
-            customerOrder.setAsNew();
-            customersOrdersRepository.save(customerOrder);
-            removeQuantityForAllOrderLinesProducts(customerOrder);
-            throw ex;
-        }
 
         log.debug("Cancelled order  " + orderId);
 
@@ -179,36 +141,6 @@ public class CustomersOrdersService {
                 .stream()
                 .map(CustomerOrderLine::dto)
                 .collect(Collectors.toList());
-    }
-
-    private void addQuantityForAllOrderLinesProducts(final CustomerOrder customerOrder){
-        customerOrder
-                .getLines()
-                .forEach(orderLine -> {
-                    int productQuantity = orderLine.getQuantity();
-                    productsService.addProductToStock(orderLine.getProductId(), productQuantity);
-                });
-    }
-
-    private void removeQuantityForAllOrderLinesProducts(final CustomerOrder customerOrder){
-        customerOrder
-                .getLines()
-                .forEach(orderLine -> {
-                    int productQuantity = orderLine.getQuantity();
-                    productsService.removeProductFromStock(orderLine.getProductId(), productQuantity);
-                });
-    }
-
-    private void removeProductFromOrder(final UUID orderId,
-                                        final UUID productId,
-                                        final int productQuantity) {
-
-        CustomerOrder customerOrder = customersOrdersRepository
-                .findById(orderId)
-                .orElseThrow(() -> new OrderNotFoundException(orderId));
-
-        customersOrdersRepository.save(
-                customerOrder.removeProduct(productId, productQuantity));
     }
 
     private CustomerOrder createNewOrderLine(final UUID orderId,
